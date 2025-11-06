@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  shipping_api:
+    build: .
+    container_name: shipping_api
+    command: sh -c "python manage.py migrate && gunicorn --bind 0.0.0.0:9002 --workers 4 --reload shipping_service.wsgi:application"
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+      - logs_volume:/app/logs
+    ports:
+      - "9002:9002"
+    env_file:
+      - config.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - shipping_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9002/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  shipping_consumer:
+    build: .
+    container_name: shipping_consumer
+    command: python manage.py consume_shipping_events
+    volumes:
+      - .:/app
+      - logs_volume:/app/logs
+    env_file:
+      - config.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - shipping_network
+    restart: unless-stopped
+
+volumes:
+  static_volume:
+  logs_volume:
+
+networks:
+  shipping_network:
+    driver: bridge

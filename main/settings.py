@@ -26,7 +26,7 @@ INSTALLED_APPS = [
     'drf_yasg',  # Swagger documentation
 
     # Local apps
-    'shipping',
+    'shipment',
 ]
 
 MIDDLEWARE = [
@@ -40,7 +40,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'shipping_service.urls'
+ROOT_URLCONF = 'main.urls'
 
 TEMPLATES = [
     {
@@ -64,11 +64,16 @@ WSGI_APPLICATION = 'shipping_service.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME', default='shipping_db'),
-        'USER': config('DB_USER', default='shipping_user'),
-        'PASSWORD': config('DB_PASSWORD', default='shipping_pass'),
+        'NAME': config('DB_NAME', default='postgres_db'),
+        'USER': config('DB_USER', default='postgres_user'),
+        'PASSWORD': config('DB_PASSWORD', default='postgres_password'),
         'HOST': config('DB_HOST', default='localhost'),
         'PORT': config('DB_PORT', default='5432'),
+        'CONN_MAX_AGE': 600,
+        'OPTIONS': {
+            'connect_timeout': 10,
+            'options': f"-c search_path={config('DB_SCHEMA', default='shipment')}",
+        }
     }
 }
 
@@ -150,24 +155,24 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
         },
-        'file': {
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'shipping.log'),
-            'formatter': 'verbose',
-        },
+        # 'file': {
+        #     'class': 'logging.FileHandler',
+        #     'filename': os.path.join(BASE_DIR, 'logs', 'shipping.log'),
+        #     'formatter': 'verbose',
+        # },
     },
     'root': {
-        'handlers': ['console', 'file'],
+        'handlers': ['console'],
         'level': config('LOG_LEVEL', default='INFO'),
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': config('LOG_LEVEL', default='INFO'),
             'propagate': False,
         },
         'shipping': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': config('LOG_LEVEL', default='DEBUG'),
             'propagate': False,
         },

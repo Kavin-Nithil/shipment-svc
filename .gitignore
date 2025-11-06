@@ -1,0 +1,22 @@
+# Virtual environments
+venv/
+.env/
+env/
+.venv/
+*.pyc
+__pycache__/
+
+# JetBrains / IntelliJ / PyCharm
+.idea/
+
+# VS Code settings (optional)
+.vscode/
+
+# Python cache / build files
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.egg-info/
+dist/
+build/

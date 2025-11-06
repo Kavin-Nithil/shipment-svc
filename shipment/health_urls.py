@@ -4,6 +4,8 @@ from django.db import connection
 from django.conf import settings
 import pika
 
+from shipment import admin
+
 
 def health_check(request):
     """Basic health check"""
@@ -69,7 +71,6 @@ def health_live(request):
 
 urlpatterns = [
     path('', health_check, name='health'),
-    path("admin/", admin.site.urls),
     path('ready/', health_ready, name='health-ready'),
     path('live/', health_live, name='health-live'),
 ]

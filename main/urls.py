@@ -21,7 +21,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
 
-from shipping.views import ShipmentViewSet
+from shipment.views import ShipmentViewSet
 
 # API Router
 router = DefaultRouter()
@@ -54,5 +54,5 @@ urlpatterns = [
     path('swagger.json', schema_view.without_ui(cache_timeout=0), name='schema-json'),
 
     # Health check
-    path('health/', include('shipping.health_urls')),
+    path('health/', include('shipment.health_urls')),
 ]
