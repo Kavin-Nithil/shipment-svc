@@ -1,48 +1,40 @@
-version: '3.8'
+version: "3.9"
 
 services:
   shipping_api:
     build: .
-    container_name: shipping_api
-    command: sh -c "python manage.py migrate && gunicorn --bind 0.0.0.0:9002 --workers 4 --reload shipping_service.wsgi:application"
+    container_name: shipping
+    command: >
+      sh -c "gunicorn --workers 4 --bind 0.0.0.0:9002 main.wsgi:application"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "rabbitmq:host-gateway"
+    ports:
+      - "9002:9002"
     volumes:
       - .:/app
       - static_volume:/app/staticfiles
       - logs_volume:/app/logs
-    ports:
-      - "9002:9002"
     env_file:
       - config.env
-    depends_on:
-      postgres:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
     networks:
-      - shipping_network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9002/health/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      - shared-net
+    restart: unless-stopped
 
   shipping_consumer:
     build: .
-    container_name: shipping_consumer
+    container_name: shipping-consumer
     command: python manage.py consume_shipping_events
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "rabbitmq:host-gateway"
     volumes:
       - .:/app
       - logs_volume:/app/logs
     env_file:
       - config.env
-    depends_on:
-      postgres:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
     networks:
-      - shipping_network
+      - shared-net
     restart: unless-stopped
 
 volumes:
@@ -50,5 +42,5 @@ volumes:
   logs_volume:
 
 networks:
-  shipping_network:
-    driver: bridge
+  shared-net:
+    external: true

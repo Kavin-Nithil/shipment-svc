@@ -58,7 +58,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'shipping_service.wsgi.application'
+WSGI_APPLICATION = 'main.wsgi.application'
 
 # Database
 DATABASES = {

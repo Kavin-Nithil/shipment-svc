@@ -33,4 +33,4 @@ RUN python manage.py collectstatic --noinput || true
 EXPOSE 8003
 
 # Run migrations and start server
-CMD ["sh", "-c", "python manage.py migrate && gunicorn --bind 0.0.0.0:8003 --workers 4 --timeout 120 shipping_service.wsgi:application"]
+CMD ["sh", "-c", "python manage.py migrate && gunicorn --bind 0.0.0.0:9002 --workers 4 --timeout 120 shipping_service.wsgi:application"]

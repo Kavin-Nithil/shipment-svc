@@ -3,7 +3,7 @@ Management command to consume RabbitMQ events
 Usage: python manage.py consume_events
 """
 from django.core.management.base import BaseCommand
-from shipment.management.commands.rabbitmq_consumer import RabbitMQConsumer, message_callback
+from shipment.rabbitmq_consumer import RabbitMQConsumer, message_callback
 import logging
 
 logger = logging.getLogger(__name__)
